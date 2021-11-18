@@ -1,0 +1,96 @@
+<?php
+
+namespace App\Http\Livewire{{ subFolder }};
+
+use Illuminate\Support\Collection;
+use Illuminate\Database\QueryException;
+use PowerComponents\LivewirePowerGrid\Button;
+use PowerComponents\LivewirePowerGrid\Column;
+use PowerComponents\LivewirePowerGrid\PowerGrid;
+use PowerComponents\LivewirePowerGrid\PowerGridCollection;
+use PowerComponents\LivewirePowerGrid\PowerGridComponent;
+use PowerComponents\LivewirePowerGrid\Traits\ActionButton;
+
+class {{ componentName }} extends PowerGridComponent
+{
+    use ActionButton;
+
+    /*
+    |--------------------------------------------------------------------------
+    |  Datasource
+    |--------------------------------------------------------------------------
+    | Provides data to your Table using a Model or Collection
+    |
+    */
+    public function datasource(): Collection
+    {
+        return {{ modelLastName }}::query()->get();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    |  Relationship Search
+    |--------------------------------------------------------------------------
+    | Configure here relationships to be used by the Search and Table Filters.
+    |
+    */
+    public function setUp()
+    {
+        $this->showCheckBox()
+            ->showPerPage()
+            ->showExportOption('download', ['excel', 'csv'])
+            ->showSearchInput();
+    }
+    
+    /*
+    |--------------------------------------------------------------------------
+    |  Add Column
+    |--------------------------------------------------------------------------
+    | Make Datasource fields available to be used as columns.
+    | You can pass a closure to transform/modify the data.
+    |
+    */
+    public function addColumns(): ?PowerGridCollection
+    {
+        return PowerGrid::collection()
+            ->addColumn('id')
+            ->addColumn('name')
+            ->addColumn('created_at');
+    }
+    
+    /*
+    |--------------------------------------------------------------------------
+    |  Include Columns
+    |--------------------------------------------------------------------------
+    | Include the columns added columns, making them visible on the Table.
+    | Each column can be configured with properties, filters, actions...
+    |
+    */
+    public function columns(): array
+    {
+        return [
+            Column::add()
+                ->title(__('ID'))
+                ->field('id')
+                ->searchable()
+                ->sortable(),
+
+            Column::add()
+                ->title(__('Name'))
+                ->field('name')
+                ->searchable()
+                ->makeInputText('name')
+                ->sortable(),
+
+            Column::add()
+                ->title(__('Created at'))
+                ->field('created_at')
+                ->hidden(),
+        ];
+    }
+
+    public function template(): ?string
+    {
+        return null;
+    }
+}

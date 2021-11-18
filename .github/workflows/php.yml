@@ -78,10 +78,8 @@ jobs:
           
       - name: Testing with MySQL
         run: |
-            php artisan key:generate
             ./vendor/bin/pest --configuration phpunit.mysql.xml
 
       - name: Testing with PostgreSQL
         run: |
-            php artisan key:generate
             ./vendor/bin/pest --configuration phpunit.pgsql.xml

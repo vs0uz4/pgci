@@ -5,6 +5,7 @@ namespace PowerComponents\LivewirePowerGrid;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\{Collection as BaseCollection, Str};
 use Livewire\{Component, WithPagination};
 use PowerComponents\LivewirePowerGrid\Helpers\{Collection, Model};
@@ -352,7 +353,7 @@ class PowerGridComponent extends Component
                     ->filter();
             });
 
-        if ($this->withSortStringNumber) {
+        if ($this->withSortStringNumber && DB::getDriverName() != 'pgsql') {
             $results->orderByRaw("$sortField+0 $this->sortDirection");
         }
 

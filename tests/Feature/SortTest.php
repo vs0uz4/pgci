@@ -96,6 +96,7 @@ it('properly sorts ASC/DESC with: boolean')
     ->assertDontSeeHtml('Dish K');
 
 it('properly sorts ASC/DESC with: string-number')
+    ->skip(fn () => DB::getDriverName() == 'pgsql', 'Not supported in PostgreSQL')
     ->livewire(DishesTable::class)
     ->set('withSortStringNumber', true)
     ->set('perPage', '10')

@@ -149,19 +149,19 @@ class Model implements FilterInterface
 
                 break;
             case 'starts_with':
-                $query->where($field, 'like', $value . '%');
+                $query->where($field, CustomSql::Like(), $value . '%');
 
                 break;
             case 'ends_with':
-                $query->where($field, 'like', '%' . $value);
+                $query->where($field, CustomSql::Like(), '%' . $value);
 
                 break;
             case 'contains':
-                $query->where($field, 'like', '%' . $value . '%');
+                $query->where($field, CustomSql::Like(), '%' . $value . '%');
 
                 break;
             case 'contains_not':
-                $query->where($field, 'not like', '%' . $value . '%');
+                $query->where($field, 'NOT ' . CustomSql::Like(), '%' . $value . '%');
 
                 break;
         }
@@ -266,14 +266,14 @@ class Model implements FilterInterface
                 foreach ($this->columns as $column) {
                     if ($column->searchable) {
                         if (filled($column->tableWithColumn)) {
-                            $query->orWhere($column->tableWithColumn, 'like', '%' . $this->search . '%');
+                            $query->orWhere($column->tableWithColumn, CustomSql::Like(), '%' . $this->search . '%');
                         }
 
                         if (blank($column->tableWithColumn)) {
                             $hasColumn = Schema::hasColumn($table, $column->field);
 
                             if ($hasColumn) {
-                                $query->orWhere($table . '.' . $column->field, 'like', '%' . $this->search . '%');
+                                $query->orWhere($table . '.' . $column->field, CustomSql::Like(), '%' . $this->search . '%');
                             }
                         }
                     }
@@ -303,13 +303,13 @@ class Model implements FilterInterface
                         if ($this->query->getRelation($table)->getRelation($nestedTable)) {
                             foreach ($column as $nestedColumn) {
                                 $this->query = $this->query->orWhereHas($table . '.' . $nestedTable, function (Builder $query) use ($nestedColumn) {
-                                    $query->where($nestedColumn, 'like', '%' . $this->search . '%');
+                                    $query->where($nestedColumn, CustomSql::Like(), '%' . $this->search . '%');
                                 });
                             }
                         }
                     } else {
                         $this->query = $this->query->orWhereHas($table, function (Builder $query) use ($column) {
-                            $query->where($column, 'like', '%' . $this->search . '%');
+                            $query->where($column, CustomSql::Like(), '%' . $this->search . '%');
                         });
                     }
                 }

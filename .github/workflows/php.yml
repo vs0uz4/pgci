@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - pgsql
 
   pull_request:
     types: [ ready_for_review, synchronize, opened ]

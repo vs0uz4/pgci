@@ -5,10 +5,9 @@ namespace PowerComponents\LivewirePowerGrid;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\{Collection as BaseCollection, Str};
 use Livewire\{Component, WithPagination};
-use PowerComponents\LivewirePowerGrid\Helpers\{Collection, Model};
+use PowerComponents\LivewirePowerGrid\Helpers\{Collection, Model, SqlSupport};
 use PowerComponents\LivewirePowerGrid\Themes\ThemeBase;
 use PowerComponents\LivewirePowerGrid\Traits\{BatchableExport, Checkbox, Exportable, Filter, WithSorting};
 use Psr\SimpleCache\InvalidArgumentException;
@@ -152,9 +151,9 @@ class PowerGridComponent extends Component
      */
     public function showPerPage(int $perPage = 10): PowerGridComponent
     {
-        if (\Str::contains($perPage, $this->perPageValues)) {
+        if (Str::contains($perPage, $this->perPageValues)) {
             $this->perPageInput = true;
-            $this->perPage      = $perPage;
+            $this->perPage = $perPage;
         }
 
         return $this;
@@ -342,6 +341,8 @@ class PowerGridComponent extends Component
             $sortField = $this->currentTable . '.' . $this->sortField;
         }
 
+        $sortFieldType = SqlSupport::getSortFieldType($sortField);
+
         $results = $this->resolveModel($datasource)
             ->where(function (Builder $query) {
                 Model::query($query)
@@ -353,8 +354,8 @@ class PowerGridComponent extends Component
                     ->filter();
             });
 
-        if ($this->withSortStringNumber && DB::getDriverName() != 'pgsql') {
-            $results->orderByRaw("$sortField+0 $this->sortDirection");
+        if ($this->withSortStringNumber && SqlSupport::isValidSortFieldType($sortFieldType)) {
+            $results->orderByRaw(SqlSupport::sortStringAsNumber($sortField) . ' ' . $this->sortDirection);
         }
 
         $results = $results->orderBy($sortField, $this->sortDirection);
